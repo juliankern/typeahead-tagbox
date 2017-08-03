@@ -1,9 +1,5 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.default = typeaheadTagbox;
 function typeaheadTagbox(options) {
     options = Object.assign({
         caseSensitive: false,
@@ -25,6 +21,7 @@ function typeaheadTagbox(options) {
         tagClass: 'typeahead-tag',
         tagDeleteButtonContent: 'x',
         tagRemovingClass: 'removing',
+        tagTemplate: '{{text}}',
         textKey: 'text',
         typeaheadClass: 'typeahead'
     }, options);
@@ -88,7 +85,7 @@ function typeaheadTagbox(options) {
                 }
             }
 
-            if (!value.length && e.key === 'Backspace') {
+            if (!value.length && e.key === 'Backspace' && selected.length > 0) {
                 var tags = $$('.' + options.tagClass);
                 e.preventDefault();
 
@@ -172,7 +169,7 @@ function typeaheadTagbox(options) {
         var tagElement = document.createElement('span');
         var deleteButton = document.createElement('button');
         var tags = $$('.' + options.tagClass);
-        tagElement.innerHTML = data[options.textKey];
+        tagElement.innerHTML = _replaceVariables(options.tagTemplate, data);
         deleteButton.dataset.id = data.id;
         deleteButton.innerHTML = options.tagDeleteButtonContent;
         tagElement.dataset.id = data[options.idKey];
@@ -205,9 +202,10 @@ function typeaheadTagbox(options) {
             listElement = document.createElement('li');
             listElement.classList.add(options.dropdownItemClass);
             listElement.dataset.id = d.id;
-            listElement.innerHTML = options.dropdownItemTemplate.replace(/{{text}}/g, d[options.textKey].replace(new RegExp(value, options.caseSensitive ? 'g' : 'gi'), '<span class="' + options.highlightClass + '">$&</span>')).replace(/{{id}}/g, d[options.idKey]).replace(/{{(\w+)}}/g, function (m, p) {
-                return d[p] || '';
-            });
+            listElement.innerHTML = _replaceVariables(options.dropdownItemTemplate, Object.assign({}, d, {
+                text: value.replace(new RegExp(value, options.caseSensitive ? 'g' : 'gi'), '<span class="' + options.highlightClass + '">$&</span>')
+            }));
+
             listElement.addEventListener('click', function () {
                 clickTypeahead(d);
             });
@@ -221,6 +219,12 @@ function typeaheadTagbox(options) {
         if (options.onOpenDropdown && typeof options.onOpenDropdown === 'function') {
             options.onOpenDropdown(value, data);
         }
+    }
+
+    function _replaceVariables(text, data) {
+        return text.replace(/{{text}}/g, data[options.textKey]).replace(/{{id}}/g, data[options.idKey]).replace(/{{(\w+)}}/g, function (m, p) {
+            return data[p] || '';
+        });
     }
 
     function closeDropdown() {

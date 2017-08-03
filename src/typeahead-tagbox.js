@@ -1,6 +1,6 @@
 'use strict';
 
-export default function typeaheadTagbox(options) {
+function typeaheadTagbox(options) {
     options = Object.assign({
         caseSensitive: false,
         data: [],
@@ -21,6 +21,7 @@ export default function typeaheadTagbox(options) {
         tagClass: 'typeahead-tag',
         tagDeleteButtonContent: 'x',
         tagRemovingClass: 'removing',
+        tagTemplate: '{{text}}',
         textKey: 'text',
         typeaheadClass: 'typeahead'
     }, options);
@@ -84,7 +85,7 @@ export default function typeaheadTagbox(options) {
                 }
             }
 
-            if (!value.length && e.key === 'Backspace') {
+            if (!value.length && e.key === 'Backspace' && selected.length > 0) {
                 let tags = $$('.' + options.tagClass);
                 e.preventDefault();
 
@@ -170,7 +171,7 @@ export default function typeaheadTagbox(options) {
         let tagElement = document.createElement('span');
         let deleteButton = document.createElement('button');
         let tags = $$(`.${options.tagClass}`);
-        tagElement.innerHTML = data[options.textKey];
+        tagElement.innerHTML = _replaceVariables(options.tagTemplate, data);
         deleteButton.dataset.id = data.id;
         deleteButton.innerHTML = options.tagDeleteButtonContent;
         tagElement.dataset.id = data[options.idKey];
@@ -203,15 +204,11 @@ export default function typeaheadTagbox(options) {
             listElement = document.createElement('li');
             listElement.classList.add(options.dropdownItemClass);
             listElement.dataset.id = d.id;
-            listElement.innerHTML = options.dropdownItemTemplate
-                .replace(/{{text}}/g, d[options.textKey]
-                    .replace(new RegExp(value, options.caseSensitive ? 'g' : 'gi'),
-                        `<span class="${options.highlightClass}">$&</span>`)
-                )
-                .replace(/{{id}}/g, d[options.idKey])
-                .replace(/{{(\w+)}}/g, (m, p) => {
-                    return d[p] || '';
-                });
+            listElement.innerHTML = _replaceVariables(options.dropdownItemTemplate, Object.assign({}, d, {
+                text: value.replace(new RegExp(value, options.caseSensitive ? 'g' : 'gi'),
+                    `<span class="${options.highlightClass}">$&</span>`)
+                }));
+
             listElement.addEventListener('click', () => {
                 clickTypeahead(d);
             });
@@ -225,6 +222,15 @@ export default function typeaheadTagbox(options) {
         if (options.onOpenDropdown && typeof options.onOpenDropdown === 'function') {
             options.onOpenDropdown(value, data);
         }
+    }
+
+    function _replaceVariables(text, data) {
+        return text
+            .replace(/{{text}}/g, data[options.textKey])
+            .replace(/{{id}}/g, data[options.idKey])
+            .replace(/{{(\w+)}}/g, (m, p) => {
+                return data[p] || '';
+            });
     }
 
     function closeDropdown() {

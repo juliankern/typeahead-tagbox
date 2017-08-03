@@ -36,6 +36,7 @@ inputPlaceholder | `"add..."` | String | String for the input placeholder
 minLength | `2` | Integer | Number of chars to be typed befor the search starts
 selector | `".typeahead-tagbox"` | String | Selector for the to be transformed input element
 tagDeleteButtonContent | `"x"` | String | Content of the delete button. May be an image tag or svg icon for example
+tagTemplate | `"{{text}}"` | String | The template for the tags. Possible variables: `{{text}}`, `{{id}}`, and any additional key you add to the data objects
 textKey | `"text"` | String | Key of the data objects, which should be displayed in the dropdown and tag
 ### Classes
 Name | default | type | Comment

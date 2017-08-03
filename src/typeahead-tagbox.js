@@ -1,6 +1,6 @@
 'use strict';
 
-function typeaheadTagbox(options) {
+export default function typeaheadTagbox(options) {
     options = Object.assign({
         caseSensitive: false,
         data: [],
@@ -204,10 +204,14 @@ function typeaheadTagbox(options) {
             listElement = document.createElement('li');
             listElement.classList.add(options.dropdownItemClass);
             listElement.dataset.id = d.id;
-            listElement.innerHTML = _replaceVariables(options.dropdownItemTemplate, Object.assign({}, d, {
-                text: value.replace(new RegExp(value, options.caseSensitive ? 'g' : 'gi'),
-                    `<span class="${options.highlightClass}">$&</span>`)
-                }));
+            listElement.innerHTML = _replaceVariables(
+                options.dropdownItemTemplate,
+                Object.assign({}, d, {
+                    text: value.replace(new RegExp(value, options.caseSensitive ? 'g' : 'gi'),
+                        `<span class="${options.highlightClass}">$&</span>`)
+                    }
+                )
+            );
 
             listElement.addEventListener('click', () => {
                 clickTypeahead(d);

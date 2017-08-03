@@ -1,5 +1,9 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = typeaheadTagbox;
 function typeaheadTagbox(options) {
     options = Object.assign({
         caseSensitive: false,

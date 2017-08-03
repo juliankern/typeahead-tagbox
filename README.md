@@ -1,5 +1,5 @@
 # typeahead-tagbox
-Converts an `<input>` to a typeahead tagbox.
+Converts an `<input>` to a typeahead tagbox. [Demos](https://codepen.io/juliankern/pen/GvjxMN)
 
 ## Basic Usage
 Javascript:
